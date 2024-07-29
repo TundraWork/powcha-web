@@ -1,11 +1,11 @@
-import './altcha.css';
+import './powcha.css';
 import './worker?worker';
-import Altcha from './Altcha.svelte';
+import Altcha from './PoWCHA.svelte';
 
 declare global {
-  var createAltchaWorker: (url?: string) => Worker;
+  var createPoWCHAWorker: (url?: string) => Worker;
 }
 
-globalThis.createAltchaWorker = (url?: string) => new Worker(new URL(url || './worker.js', import.meta.url));
+globalThis.createPoWCHAWorker = (url?: string) => new Worker(new URL(url || './worker.js', import.meta.url));
 
 export { Altcha };

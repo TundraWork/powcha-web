@@ -1,10 +1,10 @@
 import InlineWorker from './worker?worker&inline';
-import Altcha from './Altcha.svelte';
+import Altcha from './PoWCHA.svelte';
 
 declare global {
-  var createAltchaWorker: (url?: string) => Worker;
+  var createPoWCHAWorker: (url?: string) => Worker;
 }
 
-globalThis.createAltchaWorker = (url?: string) => url ? new Worker(new URL(url)) : new InlineWorker();
+globalThis.createPoWCHAWorker = (url?: string) => url ? new Worker(new URL(url)) : new InlineWorker();
 
 export { Altcha };

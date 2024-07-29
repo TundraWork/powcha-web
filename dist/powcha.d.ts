@@ -5,22 +5,22 @@ declare module 'altcha';
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'altcha-widget': AltchaWidget;
+      'powcha-widget': PoWCHAWidget;
     }
 
-    interface AltchaWidgetCSSProperties extends React.CSSProperties {
-      '--altcha-border-width'?: string;
-      '--altcha-border-radius'?: string;
-      '--altcha-color-base'?: string;
-      '--altcha-color-border'?: string;
-      '--altcha-color-text'?: string;
-      '--altcha-color-border-focus'?: string;
-      '--altcha-color-error-text'?: string;
-      '--altcha-color-footer-bg'?: string;
-      '--altcha-max-width'?: string;
+    interface PoWCHAWidgetCSSProperties extends React.CSSProperties {
+      '--powcha-border-width'?: string;
+      '--powcha-border-radius'?: string;
+      '--powcha-color-base'?: string;
+      '--powcha-color-border'?: string;
+      '--powcha-color-text'?: string;
+      '--powcha-color-border-focus'?: string;
+      '--powcha-color-error-text'?: string;
+      '--powcha-color-footer-bg'?: string;
+      '--powcha-max-width'?: string;
     }
 
-    interface AltchaWidget {
+    interface PoWCHAWidget {
       auto?: 'onfocus' | 'onload' | 'onsubmit';
       blockspam?: boolean;
       challengeurl?: string;
@@ -34,12 +34,13 @@ declare global {
       hidefooter?: boolean;
       hidelogo?: boolean;
       name?: string;
+      formfieldname?: string;
       maxnumber?: number;
       mockerror?: boolean;
       refetchonexpire?: boolean;
       spamfilter?: boolean | 'ipAddress';
       strings?: string;
-      style?: AltchaWidgetCSSProperties;
+      style?: PoWCHAWidgetCSSProperties;
       test?: boolean | number;
       verifyurl?: string;
       workers?: number;

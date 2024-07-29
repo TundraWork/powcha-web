@@ -24,6 +24,7 @@ export interface Configure {
   maxnumber?: number;
   mockerror?: boolean;
   name?: string;
+  formfieldname?: string;
   refetchonexpire?: boolean;
   spamfilter?: boolean | 'ipAddress' | SpamFilter;
   strings?: Partial<Strings>;

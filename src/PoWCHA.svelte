@@ -1,6 +1,6 @@
 <svelte:options
   customElement={{
-    tag: 'altcha-widget',
+    tag: 'powcha-widget',
     shadow: 'none',
   }}
 />
@@ -37,7 +37,8 @@
   export let floatingoffset: number | undefined = undefined;
   export let hidefooter: boolean = false;
   export let hidelogo: boolean = false;
-  export let name: string = 'altcha';
+  export let name: string = 'powcha';
+  export let formfieldname: string = 'powcha';
   export let maxnumber: number = 1e6;
   export let mockerror: boolean = false;
   export let refetchonexpire: boolean = true;
@@ -50,8 +51,8 @@
 
   const dispatch = createEventDispatcher();
   const allowedAlgs = ['SHA-256', 'SHA-384', 'SHA-512'];
-  const ariaLinkLabel = 'Visit Altcha.org';
-  const website = 'https://altcha.org/';
+  const ariaLinkLabel = 'PoWCHA';
+  const website = 'https://github.com/TundraWork/powcha-web';
   const documentLocale = document.documentElement.lang?.split('-')?.[0];
 
   let checked: boolean = false;
@@ -64,9 +65,6 @@
   let state: State = State.UNVERIFIED;
   let expireTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  $: isFreeSaaS =
-    !!challengeurl?.includes('.altcha.org') &&
-    !!challengeurl?.includes('apiKey=ckey_');
   $: parsedChallenge = challengejson
     ? parseJsonAttribute(challengejson)
     : undefined;
@@ -74,12 +72,12 @@
   $: _strings = {
     ariaLinkLabel,
     error: 'Verification failed. Try again later.',
-    expired: 'Verification expired. Try again.',
-    footer: `Protected by <a href="${website}" target="_blank" aria-label="${parsedStrings.ariaLinkLabel || ariaLinkLabel}">ALTCHA</a>`,
-    label: "I'm not a robot",
-    verified: 'Verified',
-    verifying: 'Verifying...',
-    waitAlert: 'Verifying... please wait.',
+    expired: 'Work timed out. Please try again.',
+    footer: `Protected by <a href="${website}" target="_blank" aria-label="${parsedStrings.ariaLinkLabel || ariaLinkLabel}">PoWCHA</a>`,
+    label: "I'm not a bad robot",
+    verified: "You're good to go! 🎉",
+    verifying: 'Working... ⚙️',
+    waitAlert: 'Still working... Please wait.',
     ...parsedStrings,
   };
   $: dispatch('statechange', { payload, state });
@@ -129,16 +127,11 @@
     if (auto === 'onload') {
       verify();
     }
-    if (isFreeSaaS && (hidefooter || hidelogo)) {
-      log(
-        'Attributes hidefooter and hidelogo ignored because usage with free API Keys require attribution.'
-      );
-    }
   });
 
   function log(...args: any[]) {
     if (debug || args.some((a) => a instanceof Error)) {
-      console[args[0] instanceof Error ? 'error' : 'log']('ALTCHA', ...args);
+      console[args[0] instanceof Error ? 'error' : 'log']('PoWCHA', ...args);
     }
   }
 
@@ -225,7 +218,7 @@
       log('fetching challenge from', challengeurl);
       const resp = await fetch(challengeurl, {
         headers: {
-          'x-altcha-spam-filter': !!spamfilter ? '1' : '0',
+          'x-powcha-spam-filter': !!spamfilter ? '1' : '0',
         },
       });
       if (resp.status !== 200) {
@@ -233,7 +226,7 @@
       }
       // The use of Expires header is deprecated, use salt params instead
       const expHeader = resp.headers.get('Expires');
-      const configHeader = resp.headers.get('X-Altcha-Config');
+      const configHeader = resp.headers.get('X-powcha-Config');
       const json = await resp.json();
       const params = new URLSearchParams(json.salt.split('?')?.[1]);
       const expires = params.get('expires') || params.get('expire');
@@ -257,7 +250,7 @@
             configure(config);
           }
         } catch (err) {
-          log('unable to configure from X-Altcha-Config', err);
+          log('unable to configure from X-powcha-Config', err);
         }
       }
       if (!expire && expHeader?.length) {
@@ -325,7 +318,7 @@
     const workers: Worker[] = [];
     concurrency = Math.min(16, Math.max(1, concurrency));
     for (let i = 0; i < concurrency; i++) {
-      workers.push(createAltchaWorker(workerurl));
+      workers.push(createPoWCHAWorker(workerurl));
     }
     const step = Math.ceil(max / concurrency);
     const solutions = await Promise.all(
@@ -760,8 +753,8 @@
   }
 </script>
 
-<div bind:this={el} class="altcha" data-state={state} data-floating={floating}>
-  <div class="altcha-main">
+<div bind:this={el} class="powcha" data-state={state} data-floating={floating}>
+  <div class="powcha-main">
     {#if state === State.VERIFYING}
       <svg
         width="24"
@@ -775,14 +768,14 @@
         /><path
           d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"
           fill="currentColor"
-          class="altcha-spinner"
+          class="powcha-spinner"
         /></svg
       >
     {/if}
 
     <div
-      class="altcha-checkbox"
-      class:altcha-hidden={state === State.VERIFYING}
+      class="powcha-checkbox"
+      class:powcha-hidden={state === State.VERIFYING}
     >
       <input
         type="checkbox"
@@ -794,10 +787,10 @@
       />
     </div>
 
-    <div class="altcha-label">
+    <div class="powcha-label">
       {#if state === State.VERIFIED}
         <span>{@html _strings.verified}</span>
-        <input type="hidden" {name} value={payload} />
+        <input type="hidden" name={formfieldname} value={payload} />
       {:else if state === State.VERIFYING}
         <span>{@html _strings.verifying}</span>
       {:else}
@@ -805,33 +798,24 @@
       {/if}
     </div>
 
-    {#if hidelogo !== true || isFreeSaaS}
-      <div>
+    {#if hidelogo !== true}
+      <div class="powcha-brand">
         <a
           href={website}
           target="_blank"
-          class="altcha-logo"
+          class="powcha-logo"
           aria-label={_strings.ariaLinkLabel}
         >
           <svg
-            width="22"
-            height="22"
-            viewBox="0 0 20 20"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              d="M2.33955 16.4279C5.88954 20.6586 12.1971 21.2105 16.4279 17.6604C18.4699 15.947 19.6548 13.5911 19.9352 11.1365L17.9886 10.4279C17.8738 12.5624 16.909 14.6459 15.1423 16.1284C11.7577 18.9684 6.71167 18.5269 3.87164 15.1423C1.03163 11.7577 1.4731 6.71166 4.8577 3.87164C8.24231 1.03162 13.2883 1.4731 16.1284 4.8577C16.9767 5.86872 17.5322 7.02798 17.804 8.2324L19.9522 9.01429C19.7622 7.07737 19.0059 5.17558 17.6604 3.57212C14.1104 -0.658624 7.80283 -1.21043 3.57212 2.33956C-0.658625 5.88958 -1.21046 12.1971 2.33955 16.4279Z"
-              fill="currentColor"
-            />
-            <path
-              d="M3.57212 2.33956C1.65755 3.94607 0.496389 6.11731 0.12782 8.40523L2.04639 9.13961C2.26047 7.15832 3.21057 5.25375 4.8577 3.87164C8.24231 1.03162 13.2883 1.4731 16.1284 4.8577L13.8302 6.78606L19.9633 9.13364C19.7929 7.15555 19.0335 5.20847 17.6604 3.57212C14.1104 -0.658624 7.80283 -1.21043 3.57212 2.33956Z"
-              fill="currentColor"
-            />
-            <path
-              d="M7 10H5C5 12.7614 7.23858 15 10 15C12.7614 15 15 12.7614 15 10H13C13 11.6569 11.6569 13 10 13C8.3431 13 7 11.6569 7 10Z"
-              fill="currentColor"
-            />
+          <path d="M 12 2 C 6.486 2 2 6.486 2 12 C 2 17.514 6.486 22 12 22 C 17.514 22 22 17.514 22 12 C 22 10.874 21.803984 9.7942031 21.458984 8.7832031 L 19.839844 10.402344 C 19.944844 10.918344 20 11.453 20 12 C 20 16.411 16.411 20 12 20 C 7.589 20 4 16.411 4 12 C 4 7.589 7.589 4 12 4 C 13.633 4 15.151922 4.4938906 16.419922 5.3378906 L 17.851562 3.90625 C 16.203562 2.71225 14.185 2 12 2 z M 21.292969 3.2929688 L 11 13.585938 L 7.7070312 10.292969 L 6.2929688 11.707031 L 11 16.414062 L 22.707031 4.7070312 L 21.292969 3.2929688 z" 
+            fill="currentColor"
+          />
           </svg>
         </a>
       </div>
@@ -839,7 +823,7 @@
   </div>
 
   {#if error || state === State.EXPIRED}
-    <div class="altcha-error">
+    <div class="powcha-error">
       <svg
         width="14"
         height="14"
@@ -863,17 +847,17 @@
     </div>
   {/if}
 
-  {#if _strings.footer && (hidefooter !== true || isFreeSaaS)}
-    <div class="altcha-footer">
+  {#if _strings.footer && (hidefooter !== true)}
+    <div class="powcha-footer">
       <div>{@html _strings.footer}</div>
     </div>
   {/if}
 
   {#if floating}
-    <div bind:this={elAnchorArrow} class="altcha-anchor-arrow"></div>
+    <div bind:this={elAnchorArrow} class="powcha-anchor-arrow"></div>
   {/if}
 </div>
 
 <style lang="scss" global>
-  @use './altcha.css';
+  @use './powcha.css';
 </style>

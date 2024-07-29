@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import InlineWorker from './worker?worker&inline';
-  import Altcha from './Altcha.svelte';
+  import PoWCHA from './PoWCHA.svelte';
   
-  globalThis.createAltchaWorker = (url?: string) => new InlineWorker();
+  globalThis.createPoWCHAWorker = (url?: string) => new InlineWorker();
 
   const success = location.hash.includes('success');
   const failure = location.hash.includes('failure');
@@ -14,7 +14,7 @@
   let test: boolean = !challengeurl && params.get('test') !== '0';
   let mockerror: boolean = false;
 
-  let altcha: Altcha;
+  let powcha: PoWCHA;
 
   onMount(() => {
     location.hash = '';
@@ -22,7 +22,7 @@
 </script>
 
 <main>
-  <h1>ALTCHA</h1>
+  <h1>PoWCHA</h1>
 
   <div>
     <label for="challengeUrl"
@@ -83,8 +83,8 @@
       />
     </div>
 
-    <Altcha
-      bind:this={altcha}
+    <PoWCHA
+      bind:this={powcha}
       debug
       {challengeurl}
       {mockerror}

@@ -12,11 +12,11 @@
       }
     </style>
 
-    <script async defer src="./dist/altcha.js" type="module"></script>
+    <script async defer src="./dist/powcha.js" type="module"></script>
 
     <script>
       window.addEventListener('load', () => {
-        document.querySelector('#altcha').addEventListener('statechange', (ev) => {
+        document.querySelector('#powcha').addEventListener('statechange', (ev) => {
           console.log('State change:', ev.detail);
         });
       });
@@ -28,12 +28,12 @@
 
       <form action="/submit" method="post">
 
-        <altcha-widget
-          id="altcha"
+        <powcha-widget
+          id="powcha"
           challengeurl=""
           debug
           test
-        ></altcha-widget>
+        ></powcha-widget>
         
         <div class="buttons">
           <button type="submit">Submit</button>

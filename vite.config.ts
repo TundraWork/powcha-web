@@ -15,7 +15,7 @@ export default defineConfig({
       },
     }),
     EXTERNAL ? css({
-      output: 'altcha.css',
+      output: 'powcha.css',
     }) : void 0,
   ],
   build: {
@@ -24,7 +24,7 @@ export default defineConfig({
       entry: EXTERNAL
         ? 'src/entry-external.ts'
         : 'src/entry.ts',
-      name: 'altcha',
+      name: 'powcha',
       formats: ['es', 'umd'],
     },
     outDir: EXTERNAL ? 'dist_external' : 'dist',
